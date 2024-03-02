@@ -32,9 +32,9 @@ def grad_shafranov_equation(r, psi, alpha, beta):
 
     return np.vstack((dpsi_dr, d2psi_dr2))
 
-def solve_for_different_parameters(alpha, beta):
+def solve_for_different_parameters(alpha, beta, r_end):
     # Radial domain setup
-    r = np.linspace(0.01, 1.0, 100)  # Avoiding r=0 due to the singularity
+    r = np.linspace(0.01, r_end, 100)  # Avoiding r=0 due to the singularity
     psi_initial = np.zeros((2, r.size))
 
     # Wrap the Grad-Shafranov equation to include alpha and beta without changing its signature
@@ -49,7 +49,7 @@ def solve_for_different_parameters(alpha, beta):
 plt.figure(figsize=(10, 6))
 params = [(1, .1), (5, .5), (10,1)]  # Example pairs of (alpha, beta)
 for alpha, beta in params:
-    r, psi = solve_for_different_parameters(alpha, beta)
+    r, psi = solve_for_different_parameters(alpha, beta, 1)
     plt.plot(r, psi, label=f'Alpha = {alpha}, Beta = {beta}')
 
 plt.xlabel('Radius $r$')
@@ -69,7 +69,7 @@ def plasma_temperature(r, psi, alpha, beta):
 
 plt.figure(figsize=(10, 5))
 for alpha, beta in params:
-    r, psi = solve_for_different_parameters(alpha, beta)
+    r, psi = solve_for_different_parameters(alpha, beta, 1)
     T = plasma_temperature(r, psi, alpha, beta)
     plt.plot(r, T, label='Plasma Temperature')
 
@@ -117,13 +117,13 @@ def plasma_density(T, T_peak):
     return 12 * k * T / (v_sigma * Q * t)
 
 # Calculate T_peak across all alpha, beta pairs
-T_peak = max([np.max(plasma_temperature(r, solve_for_different_parameters(alpha, beta)[1], alpha, beta)) for alpha, beta in params])
+T_peak = max([np.max(plasma_temperature(r, solve_for_different_parameters(alpha, beta, 1)[1], alpha, beta)) for alpha, beta in params])
 
 # Plotting
 plt.figure(figsize=(10, 5))
 
 for alpha, beta in params:
-    r, psi = solve_for_different_parameters(alpha, beta)
+    r, psi = solve_for_different_parameters(alpha, beta, 1)
     T = plasma_temperature(r, psi, alpha, beta)
     n = plasma_density(T, T_peak)
     plt.plot(r, n, label=f'Alpha = {alpha}, Beta = {beta}')
