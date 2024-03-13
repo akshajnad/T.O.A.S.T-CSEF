@@ -134,3 +134,28 @@ plt.title('Plasma Density Distribution Based on Lawson Criterion')
 plt.legend()
 plt.grid(True)
 plt.show()
+
+def model_current_and_pulse(current, pulse_duration, alpha, beta, r_end):
+    # Adjust alpha and beta to simulate the complex influence of current and pulse duration
+    # These adjustments are hypothetical and should be tailored to your specific reactor design
+    alpha_adjusted = alpha * np.sqrt(current) * np.tanh(pulse_duration)
+    beta_adjusted = beta * np.log1p(current) * np.exp(-pulse_duration**2)
+
+    # Simulate complex electromagnetic interactions
+    electromagnetic_interaction = current**2 * np.exp(-pulse_duration) / (1 + np.sqrt(alpha_adjusted))
+
+    # Incorporate plasma stability considerations (simplified model)
+    stability_factor = 1 - np.exp(-beta_adjusted / current)
+
+    # Thermal and radiative effects
+    thermal_radiative_effects = alpha_adjusted * beta_adjusted * np.sqrt(pulse_duration) / current
+
+    r, psi = solve_for_different_parameters(alpha_adjusted, beta_adjusted, r_end)
+    T = plasma_temperature(r, psi, alpha_adjusted, beta_adjusted) * stability_factor * (1 - thermal_radiative_effects)
+    density = plasma_density(T, np.max(T)) * (1 - electromagnetic_interaction)
+
+    # Ensure physical constraints (e.g., temperature and density must not be negative)
+    T[T < 0] = 0
+    density[density < 0] = 0
+
+    return np.mean(T), np.mean(density)
