@@ -43,20 +43,16 @@ print("Average optimized parameters:", average_optimized_params)
 def optimize_current_pulse(x, alpha, beta, r_end, T_max, density_max):
     current, pulse_duration = x
     T_mean, density_mean = model_current_and_pulse(current, pulse_duration, alpha, beta, r_end)
-
     # Penalties for exceeding maximum temperature and density
     temp_penalty = 0 if T_mean <= T_max else (T_mean - T_max)**2
     density_penalty = 0 if density_mean <= density_max else (density_mean - density_max)**2
-
     # Realistic penalties for current and pulse duration
     current_penalty = 0 if 400 <= current <= 3000 else (3000 - current)**15 if current > 3000 else (400 - current)**15
     pulse_penalty = 0 if 5 <= pulse_duration <= 50 else (50 - pulse_duration)**7 if pulse_duration > 50 else (5 - pulse_duration)**7
 
-    #current: kiloamperes
-    #pulse duration: microseconds
     # Objective function combines all factors
     return temp_penalty + density_penalty + 100 * current_penalty + 1000 * pulse_penalty
-
+    
 # Temperature and density maximum thresholds
 T_max = 150e6  # 150 million Kelvin
 density_max = 1e22  # Max density in particles/m^3
