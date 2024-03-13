@@ -26,7 +26,7 @@ bounds = [(.1, 20), (.01, .5), (0.05, 2.0)]  # Adjusted bounds for radius_end
 optimized_params_all = []
 
 # Initial guess and optimization
-for y in range(5):
+for y in range(100):
     initial_guess = [np.random.uniform(.1, 20), np.random.uniform(0.01, .5), np.random.uniform(0.05, 2.0)]
     result = minimize(objective_function, initial_guess, bounds=bounds, method='TNC')
     optimized_params_all.append(result.x)
@@ -71,10 +71,12 @@ bounds = [(100, 5000), (.5, 200)]  # Example bounds, adjust as needed
 
 # Perform the optimization
 optimized_params_magnets = []
-for x in range(30):
+for x in range(100):
     initial_guess = [np.random.uniform(100, 5000), np.random.uniform(.5, 200)]
     result = minimize(optimize_current_pulse, initial_guess, args=(alpha_example, beta_example, r_end_example, T_max, density_max), bounds=bounds, method='TNC')
     optimized_params_magnets.append(result.x)
 
 optimized_params_magnets = np.array(optimized_params_magnets)
-print(optimized_params_magnets)
+average_optimized_params_magnets = np.mean(optimized_params_magnets, axis=0)
+
+print("Average optimized parameters:", average_optimized_params)
